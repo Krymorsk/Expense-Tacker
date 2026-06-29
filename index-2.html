@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Daybook — your daily money plan</title>
+<meta name="description" content="A daily expense tracker that turns your monthly budget into a clear, ever-adjusting daily allowance.">
+<meta name="theme-color" content="#16201c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2316213a'/%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%23c79a4b' stroke-width='2'/%3E%3Cline x1='16' y1='3' x2='16' y2='8' stroke='%23c79a4b' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app" class="app">
+
+  <!-- ===== Header ===== -->
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="13" class="brand-mark-ring"></circle>
+        <line x1="16" y1="3" x2="16" y2="8" class="brand-mark-ray"></line>
+      </svg>
+      <span class="brand-name">Daybook</span>
+    </div>
+    <div class="topbar-actions">
+      <button type="button" id="themeToggleBtn" class="icon-btn" aria-label="Switch to dark mode" title="Toggle theme">
+        <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+        <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+      </button>
+      <button type="button" id="settingsBtn" class="icon-btn" aria-label="Open settings" title="Settings">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.6a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V20a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.04H2a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.56-1.1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.06A1.7 1.7 0 0 0 9.12 2.1V2a2 2 0 1 1 4 0v.1c0 .66.4 1.25 1.04 1.51h.06a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.06c.26.64.85 1.07 1.51 1.07H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1.04z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- ===== Hero: today's allowance ===== -->
+    <section class="card hero-card" aria-labelledby="heroHeading">
+      <div class="hero-top">
+        <span class="hero-date" id="todayLabel">Today</span>
+        <span class="hero-cycle-label" id="cycleProgressLabel">Cycle progress</span>
+      </div>
+      <div class="hero-progress-track" role="presentation">
+        <div class="hero-progress-fill" id="cycleProgressFill"></div>
+      </div>
+
+      <div class="hero-main">
+        <div class="ring-wrap" aria-hidden="true">
+          <svg viewBox="0 0 100 100" class="ring-svg">
+            <circle cx="50" cy="50" r="42" class="ring-track"></circle>
+            <circle cx="50" cy="50" r="42" class="ring-progress" id="ringProgress"></circle>
+          </svg>
+          <span class="ring-icon" id="ringIcon">₹</span>
+        </div>
+        <div class="hero-figures">
+          <p class="hero-label" id="heroHeading">You can spend today</p>
+          <p class="hero-amount" id="heroAmount" aria-live="polite">₹0</p>
+          <p class="hero-sub" id="heroSub">of ₹0 planned for today</p>
+        </div>
+      </div>
+
+      <p class="hero-status" id="heroStatus"></p>
+    </section>
+
+    <!-- ===== Quick stats ===== -->
+    <section class="stats-grid" aria-label="Budget summary">
+      <div class="stat-card">
+        <span class="stat-label">Monthly budget</span>
+        <span class="stat-value" id="statBudget">₹0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Spent so far</span>
+        <span class="stat-value" id="statSpent">₹0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Remaining</span>
+        <span class="stat-value" id="statRemaining">₹0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Days left</span>
+        <span class="stat-value" id="statDaysLeft">0</span>
+      </div>
+    </section>
+
+    <!-- ===== Daily outlook ===== -->
+    <section class="card outlook-card">
+      <h2 class="card-title">Daily outlook</h2>
+      <div class="outlook-row">
+        <div class="outlook-item">
+          <span class="outlook-label">Today's plan</span>
+          <span class="outlook-value" id="outlookToday">₹0</span>
+        </div>
+        <div class="outlook-divider" aria-hidden="true"></div>
+        <div class="outlook-item">
+          <span class="outlook-label">Tomorrow's pace</span>
+          <span class="outlook-value" id="outlookTomorrow">₹0</span>
+        </div>
+      </div>
+      <p class="outlook-caption" id="outlookCaption">Recalculated automatically every time you log a spend.</p>
+    </section>
+
+    <!-- ===== Runway ===== -->
+    <section class="card runway-card">
+      <div class="runway-head">
+        <h2 class="card-title">This month's runway</h2>
+        <span class="runway-meta" id="runwayMeta"></span>
+      </div>
+      <div class="runway-scroll" id="runwayScroll" role="img" aria-label="Daily spending versus daily allowance across the current cycle"></div>
+      <div class="runway-legend">
+        <span><i class="dot dot-positive"></i>Under plan</span>
+        <span><i class="dot dot-danger"></i>Over plan</span>
+        <span><i class="dot dot-future"></i>Upcoming</span>
+      </div>
+    </section>
+
+    <!-- ===== Category breakdown ===== -->
+    <section class="card category-card">
+      <h2 class="card-title">Where it's going</h2>
+      <div id="categoryBreakdown" class="category-list"></div>
+      <p class="empty-note" id="categoryEmpty" hidden>Nothing logged yet this cycle — add an expense to see your breakdown.</p>
+    </section>
+
+    <!-- ===== Transactions ===== -->
+    <section class="card transactions-card">
+      <h2 class="card-title">Transactions</h2>
+
+      <div class="filters">
+        <div class="search-field">
+          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="searchInput" placeholder="Search notes or categories" aria-label="Search transactions">
+        </div>
+        <div class="filter-row">
+          <select id="categoryFilter" aria-label="Filter by category">
+            <option value="">All categories</option>
+          </select>
+          <div class="scope-toggle" role="group" aria-label="Transaction range">
+            <button type="button" class="scope-btn is-active" data-scope="cycle">This cycle</button>
+            <button type="button" class="scope-btn" data-scope="all">All time</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="transactionList" class="transaction-list"></div>
+      <p class="empty-note" id="transactionsEmpty" hidden>No transactions match — try a different search or filter.</p>
+    </section>
+
+    <footer class="app-footer">
+      <p>Your numbers stay on this device — nothing is uploaded, synced, or shared.</p>
+    </footer>
+
+  </main>
+
+  <button type="button" id="fabAdd" class="fab" aria-label="Add expense">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+
+  <!-- ===== Add / Edit Expense Modal ===== -->
+  <div class="modal-backdrop" id="expenseBackdrop" hidden>
+    <div class="modal sheet" role="dialog" aria-modal="true" aria-labelledby="expenseModalTitle">
+      <div class="modal-handle" aria-hidden="true"></div>
+      <div class="modal-head">
+        <h2 id="expenseModalTitle">Add expense</h2>
+        <button type="button" class="icon-btn modal-close" data-close="expense" aria-label="Close">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form id="expenseForm" novalidate>
+        <input type="hidden" id="expenseId">
+
+        <label class="field-label" for="expenseAmount">Amount</label>
+        <div class="amount-field">
+          <span class="amount-prefix">₹</span>
+          <input type="number" id="expenseAmount" inputmode="decimal" min="0.01" step="0.01" placeholder="0" required>
+        </div>
+        <p class="field-error" id="amountError" hidden>Enter an amount greater than ₹0.</p>
+
+        <label class="field-label">Category</label>
+        <div class="chip-row" id="categoryChips" role="radiogroup" aria-label="Category"></div>
+        <p class="field-error" id="categoryError" hidden>Choose a category.</p>
+
+        <label class="field-label" for="expenseDate">Date</label>
+        <input type="date" id="expenseDate" required>
+        <p class="field-error" id="dateError" hidden>Choose a valid date.</p>
+
+        <label class="field-label" for="expenseNote">Note <span class="optional-tag">optional</span></label>
+        <input type="text" id="expenseNote" placeholder="What was this for?" maxlength="80">
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost danger-confirm" id="deleteExpenseBtn" hidden>Delete</button>
+          <button type="submit" class="btn btn-primary" id="saveExpenseBtn">Save expense</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Settings Modal ===== -->
+  <div class="modal-backdrop" id="settingsBackdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+      <div class="modal-head">
+        <h2 id="settingsModalTitle">Settings</h2>
+        <button type="button" class="icon-btn modal-close" data-close="settings" aria-label="Close">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form id="settingsForm" novalidate>
+        <label class="field-label" for="budgetInput">Monthly budget</label>
+        <div class="amount-field">
+          <span class="amount-prefix">₹</span>
+          <input type="number" id="budgetInput" inputmode="decimal" min="1" step="1" required>
+        </div>
+        <p class="field-error" id="budgetError" hidden>Enter an amount greater than ₹0.</p>
+
+        <label class="field-label" for="resetDayInput">Resets on day</label>
+        <input type="number" id="resetDayInput" inputmode="numeric" min="1" max="31" required>
+        <p class="field-hint">If a month is shorter, we'll use its last day instead.</p>
+        <p class="field-error" id="resetDayError" hidden>Choose a day between 1 and 31.</p>
+
+        <div class="field-label-row">
+          <span class="field-label">Categories</span>
+        </div>
+        <div id="categoryManageList" class="category-manage-list"></div>
+        <div class="category-add-row">
+          <input type="text" id="newCategoryInput" placeholder="Add a category" maxlength="20">
+          <button type="button" class="btn btn-secondary btn-sm" id="addCategoryBtn">Add</button>
+        </div>
+
+        <span class="field-label">Appearance</span>
+        <div class="scope-toggle theme-toggle-group" role="group" aria-label="Theme">
+          <button type="button" class="scope-btn" data-theme="light">Light</button>
+          <button type="button" class="scope-btn" data-theme="dark">Dark</button>
+          <button type="button" class="scope-btn" data-theme="system">System</button>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Save settings</button>
+        </div>
+
+        <div class="danger-zone">
+          <p>Erase everything stored on this device and start over.</p>
+          <button type="button" class="btn btn-ghost danger-confirm" id="resetAllBtn">Reset all data</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Onboarding Modal (first run) ===== -->
+  <div class="modal-backdrop" id="onboardingBackdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+      <div class="onboarding-intro">
+        <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="16" r="13" class="brand-mark-ring"></circle>
+          <line x1="16" y1="3" x2="16" y2="8" class="brand-mark-ray"></line>
+        </svg>
+        <h2 id="onboardingTitle">Welcome to Daybook</h2>
+        <p>Set your monthly budget and the day it resets — we'll work out exactly how much you can spend each day, and keep adjusting it as you go.</p>
+      </div>
+      <form id="onboardingForm" novalidate>
+        <label class="field-label" for="obBudgetInput">Monthly budget</label>
+        <div class="amount-field">
+          <span class="amount-prefix">₹</span>
+          <input type="number" id="obBudgetInput" inputmode="decimal" min="1" step="1" value="3000" required>
+        </div>
+        <p class="field-error" id="obBudgetError" hidden>Enter an amount greater than ₹0.</p>
+
+        <label class="field-label" for="obResetDayInput">Resets on day</label>
+        <input type="number" id="obResetDayInput" inputmode="numeric" min="1" max="31" value="25" required>
+        <p class="field-hint">For example, 25 means your budget refreshes on the 25th of every month.</p>
+        <p class="field-error" id="obResetDayError" hidden>Choose a day between 1 and 31.</p>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Start tracking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
